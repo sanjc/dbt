@@ -87,12 +87,12 @@ class ParseResult(JsonSchemaMixin, Writable, Replaceable):
         return self.files[key]
 
     def add_source(
-        self, source_file: SourceFile, node: ParsedSourceDefinition
+        self, source_file: SourceFile, source: ParsedSourceDefinition
     ):
-        # nodes can't be overwritten!
-        _check_duplicates(node, self.sources)
-        self.sources[node.unique_id] = node
-        self.get_file(source_file).sources.append(node.unique_id)
+        # sources can't be overwritten!
+        _check_duplicates(source, self.sources)
+        self.sources[source.unique_id] = source
+        self.get_file(source_file).sources.append(source.unique_id)
 
     def add_node(self, source_file: SourceFile, node: ManifestNodes):
         # nodes can't be overwritten!

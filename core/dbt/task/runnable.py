@@ -117,9 +117,18 @@ class GraphRunnableTask(ManifestTask):
                                                     selected_nodes)
 
         # we use this a couple times. order does not matter.
-        self._flattened_nodes = [
-            self.manifest.nodes[uid] for uid in selected_nodes
-        ]
+        self._flattened_nodes = []
+        for uid in selected_nodes:
+            if uid in self.manifest.nodes:
+                self._flattened_nodes.append(self.manifest.nodes[uid])
+            # TODO: is this possible?
+            elif uid in self.manifest.sources:
+                self._flattened_nodes.append(self.manifest.sources[uid])
+            else:
+                raise InternalException(
+                    f'Node selection returned {uid}, expected a node or a '
+                    f'source'
+                )
 
         self.num_nodes = len([
             n for n in self._flattened_nodes
@@ -191,7 +200,7 @@ class GraphRunnableTask(ManifestTask):
         """If the caller has passed the magic 'single-threaded' flag, call the
         function directly instead of pool.apply_async. The single-threaded flag
          is intended for gathering more useful performance information about
-        what appens beneath `call_runner`, since python's default profiling
+        what happens beneath `call_runner`, since python's default profiling
         tools ignore child threads.
 
         This does still go through the callback path for result collection.

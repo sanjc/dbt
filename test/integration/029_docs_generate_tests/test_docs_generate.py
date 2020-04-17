@@ -1199,6 +1199,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     },
                 },
             },
+            'sources': {},
             'parent_map': {
                 'model.test.model': ['seed.test.seed'],
                 'seed.test.seed': [],
@@ -1511,6 +1512,8 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'extra_ctes': [],
                     'injected_sql': '',
                 },
+            },
+            'sources': {
                 'source.test.my_source.my_table': {
                     'columns': {
                         'id': {
@@ -1554,7 +1557,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'tags': [],
                     'unique_id': 'source.test.my_source.my_table',
                     'fqn': ['test', 'my_source', 'my_table'],
-                }
+                },
             },
             'docs': {
                 'dbt.__overview__': ANY,
@@ -2061,6 +2064,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'injected_sql': '',
                 },
             },
+            'sources': {},
             'child_map': {
                 'model.test.clustered': [],
                 'model.test.multi_clustered': [],
@@ -2281,6 +2285,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'injected_sql': ANY,
                 },
             },
+            'sources': {},
             'parent_map': {
                 'model.test.model': ['seed.test.seed'],
                 'seed.test.seed': []
@@ -2309,7 +2314,7 @@ class TestDocsGenerate(DBTIntegrationTest):
         manifest = _read_json('./target/manifest.json')
 
         manifest_keys = frozenset({
-            'nodes', 'macros', 'parent_map', 'child_map', 'generated_at',
+            'nodes', 'sources', 'macros', 'parent_map', 'child_map', 'generated_at',
             'docs', 'metadata', 'docs', 'disabled'
         })
 

@@ -825,6 +825,25 @@ def raise_unrecognized_credentials_type(typename, supported_types):
     )
 
 
+def raise_invalid_patch(
+    node, patch_section: str, patch_path: str,
+) -> NoReturn:
+    from dbt.ui.printer import line_wrap_message
+    msg = line_wrap_message(
+        f'''\
+        '{node.name}' is a {node.resource_type} node, but it is
+        specified in the {patch_section} section of
+        {patch_path}.
+
+
+
+        To fix this error, place the `{node.name}`
+        specification under the {node.resource_type.pluralize()} key instead.
+        '''
+    )
+    raise_compiler_error(msg, node)
+
+
 def raise_not_implemented(msg):
     raise NotImplementedException(
         "ERROR: {}"

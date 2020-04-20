@@ -257,7 +257,7 @@ class SchemaParserSourceTest(SchemaParserTest):
             name='my_table',
             loader='',
             freshness=FreshnessThreshold(),
-            external=ExternalTable(),
+            external=None,
             source_description='',
             identifier='my_table',
             fqn=['snowplow', 'my_source', 'my_table'],

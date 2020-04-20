@@ -1535,10 +1535,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     },
                     'database': self.default_database,
                     'description': 'My table',
-                    'external': {
-                        'file_format': None, 'location': None, 'partitions': None,
-                        'row_format': None, 'tbl_properties': None
-                    },
+                    'external': None,
                     'freshness': {'error_after': None, 'warn_after': None, 'filter': None},
                     'identifier': 'seed',
                     'loaded_at_field': None,

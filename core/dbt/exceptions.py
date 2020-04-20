@@ -1,6 +1,6 @@
 import builtins
 import functools
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Mapping, Any
 
 from dbt.logger import GLOBAL_LOGGER as logger
 from dbt.node_types import NodeType
@@ -848,6 +848,20 @@ def raise_not_implemented(msg):
     raise NotImplementedException(
         "ERROR: {}"
         .format(msg))
+
+
+def raise_duplicate_alias(
+    kwargs: Mapping[str, Any], aliases: Mapping[str, str], canonical_key: str
+) -> NoReturn:
+    # dupe found: go through the dict so we can have a nice-ish error
+    key_names = ', '.join(
+        "{}".format(k) for k in kwargs if
+        aliases.get(k) == canonical_key
+    )
+
+    raise AliasException(
+        f'Got duplicate keys: ({key_names}) all map to "{canonical_key}"'
+    )
 
 
 def warn_or_error(msg, node=None, log_fmt=None):

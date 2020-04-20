@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypeVar, MutableMapping, Mapping, Union, List
+from typing import TypeVar, MutableMapping, Mapping, Union, List, Tuple
 
 from hologram import JsonSchemaMixin
 
@@ -73,7 +73,7 @@ class ParseResult(JsonSchemaMixin, Writable, Replaceable):
     macros: MutableMapping[str, ParsedMacro] = dict_field()
     macro_patches: MutableMapping[MacroKey, ParsedMacroPatch] = dict_field()
     patches: MutableMapping[str, ParsedNodePatch] = dict_field()
-    source_patches: MutableMapping[str, SourcePatch] = dict_field()
+    source_patches: MutableMapping[Tuple[str, str], SourcePatch] = dict_field()
     files: MutableMapping[str, SourceFile] = dict_field()
     disabled: MutableMapping[str, List[CompileResultNode]] = dict_field()
     dbt_version: str = __version__

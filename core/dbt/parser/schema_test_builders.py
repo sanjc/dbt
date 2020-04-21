@@ -7,10 +7,11 @@ from typing import (
 )
 
 from dbt.clients.jinja import get_rendered, SCHEMA_TEST_KWARGS_NAME
+from dbt.contracts.graph.parsed import UnpatchedSourceDefinition
 from dbt.contracts.graph.unparsed import (
-    UnparsedNodeUpdate, UnparsedSourceDefinition,
-    UnparsedSourceTableDefinition, UnparsedColumn, UnparsedMacroUpdate,
-    UnparsedAnalysisUpdate, TestDef
+    UnparsedNodeUpdate, UnparsedMacroUpdate, UnparsedAnalysisUpdate, TestDef,
+    UnparsedSourceDefinition, UnparsedSourceTableDefinition, UnparsedColumn,
+
 )
 from dbt.exceptions import raise_compiler_error
 from dbt.parser.search import FileBlock
@@ -62,54 +63,23 @@ class YamlBlock(FileBlock):
         )
 
 
-@dataclass
-class SourceTarget:
-    source: UnparsedSourceDefinition
-    table: UnparsedSourceTableDefinition
-
-    @property
-    def name(self) -> str:
-        return '{0.name}_{1.name}'.format(self.source, self.table)
-
-    @property
-    def quote_columns(self) -> Optional[bool]:
-        result = None
-        if self.source.quoting.column is not None:
-            result = self.source.quoting.column
-        if self.table.quoting.column is not None:
-            result = self.table.quoting.column
-        return result
-
-    @property
-    def columns(self) -> Sequence[UnparsedColumn]:
-        if self.table.columns is None:
-            return []
-        else:
-            return self.table.columns
-
-    @property
-    def tests(self) -> List[TestDef]:
-        if self.table.tests is None:
-            return []
-        else:
-            return self.table.tests
-
-
-Testable = TypeVar('Testable', SourceTarget, UnparsedNodeUpdate)
+Testable = TypeVar(
+    'Testable', UnparsedNodeUpdate, UnpatchedSourceDefinition
+)
 
 ColumnTarget = TypeVar(
     'ColumnTarget',
-    SourceTarget,
     UnparsedNodeUpdate,
     UnparsedAnalysisUpdate,
+    UnpatchedSourceDefinition,
 )
 
 Target = TypeVar(
     'Target',
-    SourceTarget,
     UnparsedNodeUpdate,
     UnparsedMacroUpdate,
     UnparsedAnalysisUpdate,
+    UnpatchedSourceDefinition,
 )
 
 
@@ -321,7 +291,7 @@ class TestBuilder(Generic[Testable]):
     def get_test_name(self) -> Tuple[str, str]:
         if isinstance(self.target, UnparsedNodeUpdate):
             name = self.name
-        elif isinstance(self.target, SourceTarget):
+        elif isinstance(self.target, UnpatchedSourceDefinition):
             name = 'source_' + self.name
         else:
             raise self._bad_type()
@@ -342,7 +312,7 @@ class TestBuilder(Generic[Testable]):
     def build_model_str(self):
         if isinstance(self.target, UnparsedNodeUpdate):
             fmt = "{{{{ ref('{0.name}') }}}}"
-        elif isinstance(self.target, SourceTarget):
+        elif isinstance(self.target, UnpatchedSourceDefinition):
             fmt = "{{{{ source('{0.source.name}', '{0.table.name}') }}}}"
         else:
             raise self._bad_type()

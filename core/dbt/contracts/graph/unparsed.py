@@ -269,7 +269,12 @@ class UnparsedSourceDefinition(JsonSchemaMixin, Replaceable):
 
 
 @dataclass
-class UnparsedSourceTablePatch(HasColumnDocs, HasTests):
+class SourceTablePatch(JsonSchemaMixin):
+    name: str
+    description: Optional[str] = None
+    meta: Optional[Dict[str, Any]] = None
+    data_type: Optional[str] = None
+    docs: Optional[Docs] = None
     loaded_at_field: Optional[str] = None
     identifier: Optional[str] = None
     quoting: Quoting = field(default_factory=Quoting)
@@ -278,11 +283,17 @@ class UnparsedSourceTablePatch(HasColumnDocs, HasTests):
     )
     external: Optional[ExternalTable] = None
     tags: Optional[List[str]] = None
+    tests: Optional[List[TestDef]] = None
+    columns: Optional[Sequence[UnparsedColumn]] = None
 
+    def to_patch_dict(self) -> Dict[str, Any]:
+        dct = self.to_dict(omit_none=True)
+        remove_keys = ('name')
+        for key in remove_keys:
+            if key in dct:
+                del dct[key]
 
-SourceTablePatch = Union[
-    UnparsedSourceTablePatch, UnparsedSourceTableDefinition
-]
+        return dct
 
 
 @dataclass
@@ -305,6 +316,22 @@ class SourcePatch(JsonSchemaMixin, Replaceable):
     loaded_at_field: Optional[str] = None
     tables: Optional[List[SourceTablePatch]] = None
     tags: Optional[List[str]] = None
+
+    def to_patch_dict(self) -> Dict[str, Any]:
+        dct = self.to_dict(omit_none=True)
+        remove_keys = ('name', 'overrides', 'tables')
+        for key in remove_keys:
+            if key in dct:
+                del dct[key]
+
+        return dct
+
+    def get_table_named(self, name: str) -> Optional[SourceTablePatch]:
+        if self.tables is not None:
+            for table in self.tables:
+                if table.name == name:
+                    return table
+        return None
 
 
 @dataclass

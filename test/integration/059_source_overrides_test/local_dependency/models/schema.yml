@@ -1,0 +1,28 @@
+version: 2
+sources:
+  - name: my_source
+    schema: invalid_schema
+    database: invalid_database
+    tables:
+      - name: my_table
+        identifier: my_seed
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: color
+            tests:
+              - unique
+              - not_null
+      - name: my_other_table
+        identifier: my_other_seed
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: letter
+            tests:
+              - unique
+              - not_null
